@@ -1,0 +1,35 @@
+version: '3.6'
+services:
+
+  postgres:
+    image: postgres:11
+    container_name: postgres
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
+    volumes:
+      - ./pg_data/data:${PGDATA:-/var/lib/postgresql/data}
+      - ./pg_data/logs:${POSTGRES_INITDB_WALDIR:-/var/log/postgresql}
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-pgpassword}
+      - PGDATA=${PGDATA:-/var/lib/postgresql/data}
+      - POSTGRES_DB=orthanc
+
+  orthanc:
+    build:
+      context: orthanc
+      dockerfile: Dockerfile
+    container_name: orthanc
+    depends_on:
+      - postgres
+    ports:
+      - ${ORTHANC_DICOM_PORT:-4242}:4242
+      - ${ORTHANC_HTTP_PORT:-8042}:8042
+    volumes:
+      - ./orthanc-db:/var/lib/orthanc/db
+    environment:
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-pgpassword}
+      - PGDATA=${PGDATA:-/var/lib/postgresql/data}
+      - POSTGRES_DB=orthanc
