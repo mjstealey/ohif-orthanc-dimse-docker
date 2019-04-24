@@ -109,4 +109,17 @@ $ docker exec -u postgres postgres psql -d orthanc -c '\dt;'
 (14 rows)
 ```
 
+### Validate in browser
+
+If using the default configuration as defined above, the Sign-In screen will be available at: [http://localhost:8042/]()
+
+- username: **orthanc**
+- password: **orthanc**
+
+<img width="80%" alt="login screen" src="docs/imgs/orthanc-login.png">
+
+Once signed in the explorer page should be presented:
+
+<img width="80%" alt="home page" src="docs/imgs/orthanc-home.png">
+
 
