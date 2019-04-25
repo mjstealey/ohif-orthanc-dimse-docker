@@ -1,4 +1,4 @@
-# OHIF Viewer/Orthanc in Docker
+# OHIF Viewer - Orthanc with DIMSE in Docker
 
 Docker Compose implementation of OHIF Viewer with Orthanc:
 
