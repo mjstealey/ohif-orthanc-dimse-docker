@@ -1,0 +1,41 @@
+{
+  "apps" : [{
+    "name"        : "ohif-viewer",
+    "script"      : "main.js",
+    "watch"       : true,
+    "merge_logs"  : true,
+    "cwd"         : "/app/bundle/",
+    "env": {
+    	"METEOR_SETTINGS": {
+		  "servers": {
+		    "dicomWeb": [
+					{
+		        "name": "Orthanc",
+		        "wadoUriRoot": "http://orthanc:8042/wado",
+		        "qidoRoot": "http://orthanc:8042/dicom-web",
+		        "wadoRoot": "http://orthanc:8042/dicom-web",
+		        "qidoSupportsIncludeField": false,
+		        "imageRendering": "wadouri",
+		        "thumbnailRendering": "wadouri",
+		        "requestOptions": {
+		          "auth": "orthanc:orthanc",
+		          "logRequests": true,
+		          "logResponses": false,
+		          "logTiming": true
+		        }
+		      }
+		    ]
+		  },
+		  "defaultServiceType": "dicomWeb",
+		  "public": {
+				"ui": {
+					"studyListDateFilterNumDays": 100
+				}
+			},
+		  "proxy": {
+		    "enabled": true
+		  }
+		}
+    }
+  }]
+}

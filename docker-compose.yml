@@ -8,7 +8,6 @@ services:
       - ${POSTGRES_PORT:-5432}:5432
     volumes:
       - ./pg_data/data:${PGDATA:-/var/lib/postgresql/data}
-      - ./pg_data/logs:${POSTGRES_INITDB_WALDIR:-/var/log/postgresql}
     environment:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-pgpassword}
@@ -16,9 +15,7 @@ services:
       - POSTGRES_DB=orthanc
 
   orthanc:
-    build:
-      context: orthanc
-      dockerfile: Dockerfile
+    image: jodogne/orthanc-plugins:latest
     container_name: orthanc
     depends_on:
       - postgres
@@ -26,10 +23,35 @@ services:
       - ${ORTHANC_DICOM_PORT:-4242}:4242
       - ${ORTHANC_HTTP_PORT:-8042}:8042
     volumes:
-      - ./orthanc-db:/var/lib/orthanc/db
+      - sampledata:/sampledata
+      - ./orthanc_db:/var/lib/orthanc/db
+      - ./config/orthanc.json:/etc/orthanc/orthanc.json:ro
     environment:
       - POSTGRES_PORT=${POSTGRES_PORT:-5432}
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-pgpassword}
       - PGDATA=${PGDATA:-/var/lib/postgresql/data}
       - POSTGRES_DB=orthanc
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongo_data:/data/db
+
+  viewer:
+    image: ohif/viewer:travis-757
+    container_name: viewer
+    ports:
+      - 3000:3000
+    links:
+      - mongo
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/ohif
+    volumes:
+      - ./config/viewer.json:/app/app.json:ro
+
+volumes:
+  sampledata:

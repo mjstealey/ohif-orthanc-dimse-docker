@@ -1,2 +1,5 @@
-/orthanc-db
+.DS_Store
+.idea
+/mongo_data
+/orthanc_db
 /pg_data
