@@ -114,6 +114,21 @@ mongo      docker-entrypoint.sh mongod     Up      0.0.0.0:27017->27017/tcp
 postgres   docker-entrypoint.sh postgres   Up      0.0.0.0:5432->5432/tcp
 ```
 
+It will take a few moments for the `postgres` container to complete it's start up scripts, but when completed the container logs should look similar to this:
+
+```console
+$ docker-compose logs postgres
+...
+postgres    |
+postgres    | PostgreSQL init process complete; ready for start up.
+postgres    |
+postgres    | 2019-04-25 19:01:47.301 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+postgres    | 2019-04-25 19:01:47.301 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+postgres    | 2019-04-25 19:01:47.305 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+postgres    | 2019-04-25 19:01:47.392 UTC [61] LOG:  database system was shut down at 2019-04-25 19:01:47 UTC
+postgres    | 2019-04-25 19:01:47.420 UTC [1] LOG:  database system is ready to accept connections
+```
+
 Next start the orthanc and viewer containers
 
 ```
@@ -130,21 +145,6 @@ mongo      docker-entrypoint.sh mongod     Up      0.0.0.0:27017->27017/tcp
 orthanc    Orthanc /etc/orthanc/           Up      0.0.0.0:4242->4242/tcp, 0.0.0.0:8042->8042/tcp
 postgres   docker-entrypoint.sh postgres   Up      0.0.0.0:5432->5432/tcp
 viewer     pm2-runtime app.json            Up      0.0.0.0:3000->3000/tcp
-```
-
-It will take a few moments for the `posgres` container to complete it's start up scripts, but when completed the container logs should look similar to this:
-
-```console
-$ docker-compose logs postgres
-...
-postgres    |
-postgres    | PostgreSQL init process complete; ready for start up.
-postgres    |
-postgres    | 2019-04-25 19:01:47.301 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
-postgres    | 2019-04-25 19:01:47.301 UTC [1] LOG:  listening on IPv6 address "::", port 5432
-postgres    | 2019-04-25 19:01:47.305 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
-postgres    | 2019-04-25 19:01:47.392 UTC [61] LOG:  database system was shut down at 2019-04-25 19:01:47 UTC
-postgres    | 2019-04-25 19:01:47.420 UTC [1] LOG:  database system is ready to accept connections
 ```
 
 ### Validate in browser
