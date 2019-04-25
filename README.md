@@ -1,6 +1,6 @@
 # OHIF Viewer - Orthanc with DIMSE in Docker
 
-Docker Compose implementation of OHIF Viewer with Orthanc:
+Docker Compose implementation of OHIF Viewer using Orthanc with DIMSE
 
 - Orthanc: [jodogne/orthanc-plugins:latest](https://hub.docker.com/r/jodogne/orthanc-plugins)
 - PostgreSQL 11: [postgres:11](https://hub.docker.com/_/postgres)
