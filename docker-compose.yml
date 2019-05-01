@@ -7,7 +7,7 @@ services:
     ports:
       - ${POSTGRES_PORT:-5432}:5432
     volumes:
-      - ./pg_data/data:${PGDATA:-/var/lib/postgresql/data}
+      - ${POSTGRES_DATA_MNT:-/pg_data/data}:${PGDATA:-/var/lib/postgresql/data}
     environment:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-pgpassword}
@@ -19,13 +19,14 @@ services:
     container_name: orthanc
     depends_on:
       - postgres
+    restart: always
     ports:
       - ${ORTHANC_DICOM_PORT:-4242}:4242
       - ${ORTHANC_HTTP_PORT:-8042}:8042
     volumes:
       - sampledata:/sampledata
-      - ./orthanc_db:/var/lib/orthanc/db
-      - ./config/orthanc.json:/etc/orthanc/orthanc.json:ro
+      - ${ORTHANC_DB:-./orthanc_db}:/var/lib/orthanc/db
+      - ${ORTHANC_CONFIG:-./config/orthanc.json}:/etc/orthanc/orthanc.json:ro
     environment:
       - POSTGRES_PORT=${POSTGRES_PORT:-5432}
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
@@ -37,21 +38,25 @@ services:
     image: mongo:latest
     container_name: mongo
     ports:
-      - 27017:27017
+      - ${MONGO_PORT:-27017}:27017
     volumes:
-      - ./mongo_data:/data/db
+      - ${MONGO_DATA:-./mongo_data}:/data/db
 
   viewer:
-    image: ohif/viewer:travis-757
+    image: ohif/viewer:latest
     container_name: viewer
+    depends_on:
+      - mongo
+      - orthanc
+    restart: always
     ports:
       - 3000:3000
     links:
       - mongo
     environment:
-      - MONGO_URL=mongodb://mongo:27017/ohif
+      - MONGO_URL=${MONGO_URL:-mongodb://mongo:27017/ohif}
     volumes:
-      - ./config/viewer.json:/app/app.json:ro
+      - ${VIEWER_CONFIG:-./config/viewer.json}:/app/app.json:ro
 
 volumes:
   sampledata:
