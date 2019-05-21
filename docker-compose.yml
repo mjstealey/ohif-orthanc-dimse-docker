@@ -1,18 +1,49 @@
 version: '3.6'
 services:
 
-  postgres:
-    image: postgres:11
-    container_name: postgres
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    networks:
+      - frontend
     ports:
-      - ${POSTGRES_PORT:-5432}:5432
+      - 8080:80
+      - 8443:443
     volumes:
-      - ${POSTGRES_DATA_MNT:-/pg_data/data}:${PGDATA:-/var/lib/postgresql/data}
+      - sampledata:/sampledata
+      - ${NGINX_DEFAULT_CONF:-./nginx/default.conf}:/etc/nginx/conf.d/default.conf
+      - ${NGINX_SSL_CERT:-./ssl/ssl_dev.crt}:/etc/ssl/SSL.crt:ro  # SSL development certificate
+      - ${NGINX_SSL_KEY:-./ssl/ssl_dev.key}:/etc/ssl/SSL.key:ro   # SSL development key
+
+  viewer:
+    image: ohif/viewer:latest
+    container_name: viewer
+    depends_on:
+      - mongo
+      - orthanc
+    restart: always
+    networks:
+      - frontend
+      - backend
+#    ports:
+#      - 3000:3000
+    links:
+      - mongo
     environment:
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-pgpassword}
-      - PGDATA=${PGDATA:-/var/lib/postgresql/data}
-      - POSTGRES_DB=orthanc
+      - MONGO_URL=${MONGO_URL:-mongodb://mongo:27017/ohif}
+    volumes:
+      - ${VIEWER_CONFIG:-./config/viewer.json}:/app/app.json:ro
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    networks:
+      - backend
+#    ports:
+#      - ${MONGO_PORT:-27017}:27017
+    volumes:
+      - ${MONGO_DATA:-./mongo_data}:/data/db
 
   orthanc:
     image: jodogne/orthanc-plugins:latest
@@ -20,9 +51,12 @@ services:
     depends_on:
       - postgres
     restart: always
-    ports:
-      - ${ORTHANC_DICOM_PORT:-4242}:4242
-      - ${ORTHANC_HTTP_PORT:-8042}:8042
+    networks:
+      - frontend
+      - backend
+#    ports:
+#      - ${ORTHANC_DICOM_PORT:-4242}:4242
+#      - ${ORTHANC_HTTP_PORT:-8042}:8042
     volumes:
       - sampledata:/sampledata
       - ${ORTHANC_DB:-./orthanc_db}:/var/lib/orthanc/db
@@ -34,29 +68,24 @@ services:
       - PGDATA=${PGDATA:-/var/lib/postgresql/data}
       - POSTGRES_DB=orthanc
 
-  mongo:
-    image: mongo:latest
-    container_name: mongo
-    ports:
-      - ${MONGO_PORT:-27017}:27017
+  postgres:
+    image: postgres:11
+    container_name: postgres
+    networks:
+      - backend
+#    ports:
+#      - ${POSTGRES_PORT:-5432}:5432
     volumes:
-      - ${MONGO_DATA:-./mongo_data}:/data/db
-
-  viewer:
-    image: ohif/viewer:latest
-    container_name: viewer
-    depends_on:
-      - mongo
-      - orthanc
-    restart: always
-    ports:
-      - 3000:3000
-    links:
-      - mongo
+      - ${POSTGRES_DATA_MNT:-/pg_data/data}:${PGDATA:-/var/lib/postgresql/data}
     environment:
-      - MONGO_URL=${MONGO_URL:-mongodb://mongo:27017/ohif}
-    volumes:
-      - ${VIEWER_CONFIG:-./config/viewer.json}:/app/app.json:ro
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-pgpassword}
+      - PGDATA=${PGDATA:-/var/lib/postgresql/data}
+      - POSTGRES_DB=orthanc
+
+networks:
+  frontend:
+  backend:
 
 volumes:
   sampledata:

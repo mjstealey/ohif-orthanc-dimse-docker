@@ -1,0 +1,54 @@
+server {
+    listen 80;
+    return 301 https://FQDN_OR_IP:PORT$request_uri; # substitute your machine's IP address or FQDN and port
+}
+
+server {
+    listen      443 ssl default_server;
+    # the domain name it will serve for
+    server_name FQDN_OR_IP:PORT; # substitute your machine's IP address or FQDN and port
+
+    # If they come here using HTTP, bounce them to the correct scheme
+    error_page 497 https://$server_name$request_uri;
+    # Or if you're on the default port 443, then this should work too
+    # error_page 497 https://;
+
+    ssl_certificate /etc/ssl/SSL.crt;
+    ssl_certificate_key /etc/ssl/SSL.key;
+
+    charset     utf-8;
+
+    # max upload size
+    client_max_body_size 75M;   # adjust to taste
+
+    # Send Orthanc requests requests to the Orthanc server.
+    location ^~ /orthanc {
+        proxy_set_header        Host $host:$server_port;
+        proxy_set_header        X-Real-IP $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto $scheme;
+
+        proxy_pass              http://orthanc:8042/;
+        proxy_read_timeout      90;
+
+        proxy_redirect          http://orthanc:8042 https://$server_name/orthanc/;
+    }
+
+    # account for Orthanc post login redirect
+    location ^~ /app/ {
+        return 301 https://$server_name/orthanc$request_uri;
+    }
+
+    # Send OHIF Viewer requests requests to the OHIF Viewer server.
+    location / {
+        proxy_set_header        Host $host:$server_port;
+        proxy_set_header        X-Real-IP $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto $scheme;
+
+        proxy_pass              http://viewer:3000/;
+        proxy_read_timeout      90;
+
+        proxy_redirect          http://viewer:3000 https://$server_name;
+    }
+}
