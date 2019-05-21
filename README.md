@@ -1,11 +1,11 @@
-# OHIF Viewer - Orthanc with DIMSE - Nginx reverse proxy - in Docker
+# OHIF Viewer - Orthanc with DIMSE - Nginx reverse proxy
 
 Docker Compose implementation of OHIF Viewer using Orthanc with DIMSE and Nginx reverse proxy
 
+- OHIF Viewer: [ohif/viewer:latest](https://hub.docker.com/r/ohif/viewer)
+- MongoDB: [mongo:latest](https://hub.docker.com/_/mongo)
 - Orthanc: [jodogne/orthanc-plugins:latest](https://hub.docker.com/r/jodogne/orthanc-plugins)
 - PostgreSQL 11: [postgres:11](https://hub.docker.com/_/postgres)
-- OHIF Viewer: [viewer:latest](https://hub.docker.com/r/ohif/viewer)
-- MongoDB: [mongo:latest](https://hub.docker.com/_/mongo)
 - Nginx: [nginx:latest](https://hub.docker.com/_/nginx/)
 
 This work is intended to be a complete working example of a docker based deployment demonstrating the OHIF Viewer using Orthanc as the image store served using Nginx and self signed SSL certificates. This work should not be considered production as presented, but rather a sane starting point for further implementation of security related features.
@@ -45,7 +45,7 @@ Next, navigate to [https://127.0.0.1:8443/orthanc](https://127.0.0.1:8443/orthan
 - Username: **orthanc**
 - Password: **orthanc**
 
-Load the sample data from the `dicom-samples` directory (Upload tab)
+Once signed in, load the sample data from the `dicom-samples` directory (Upload tab)
 
 <img width="80%" alt="Orthanc - select files" src="https://user-images.githubusercontent.com/5332509/58114399-a9429e80-7bc5-11e9-887f-930077cb0e76.png">
 
