@@ -2,7 +2,7 @@ version: '3.6'
 services:
 
   nginx:
-    image: nginx:latest
+    image: nginx:1.7.7
     container_name: nginx
     restart: always
     networks:
@@ -17,7 +17,7 @@ services:
       - ${NGINX_SSL_KEY:-./ssl/ssl_dev.key}:/etc/ssl/SSL.key:ro   # SSL development key
 
   viewer:
-    image: ohif/viewer:latest
+    image: ohif/viewer:v1.x
     container_name: viewer
     depends_on:
       - mongo
@@ -36,7 +36,7 @@ services:
       - ${VIEWER_CONFIG:-./config/viewer.json}:/app/app.json:ro
 
   mongo:
-    image: mongo:latest
+    image: mongo:4.0.14
     container_name: mongo
     networks:
       - backend
@@ -46,7 +46,7 @@ services:
       - ${MONGO_DATA:-./mongo_data}:/data/db
 
   orthanc:
-    image: jodogne/orthanc-plugins:latest
+    image: jodogne/orthanc-plugins:1.5.8
     container_name: orthanc
     depends_on:
       - postgres
@@ -69,7 +69,7 @@ services:
       - POSTGRES_DB=orthanc
 
   postgres:
-    image: postgres:11
+    image: postgres:12.1
     container_name: postgres
     networks:
       - backend

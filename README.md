@@ -1,12 +1,18 @@
 # OHIF Viewer - Orthanc with DIMSE - Nginx reverse proxy
 
+---
+
+**NOTE**: The OHIF Viewer code has changed a fair bit since this repository was originally created and as such the `:latest` tagged Docker reference no longer works with my particular setup at this time. The `docker-compose.yml` file has been updated to reflect the most recent known working versions for each image as they pertain to this particular repository. I do plan to update this at a future date, but wanted to leave things in a working order in the meantime, even if the image references are a bit out of date.
+
+---
+
 Docker Compose implementation of OHIF Viewer using Orthanc with DIMSE and Nginx reverse proxy
 
-- OHIF Viewer: [ohif/viewer:latest](https://hub.docker.com/r/ohif/viewer)
-- MongoDB: [mongo:latest](https://hub.docker.com/_/mongo)
-- Orthanc: [jodogne/orthanc-plugins:latest](https://hub.docker.com/r/jodogne/orthanc-plugins)
-- PostgreSQL 11: [postgres:11](https://hub.docker.com/_/postgres)
-- Nginx: [nginx:latest](https://hub.docker.com/_/nginx/)
+- OHIF Viewer: [ohif/viewer:v1.x](https://hub.docker.com/r/ohif/viewer)
+- MongoDB: [mongo:4.0.14](https://hub.docker.com/_/mongo)
+- Orthanc: [jodogne/orthanc-plugins:1.5.8](https://hub.docker.com/r/jodogne/orthanc-plugins)
+- PostgreSQL 11: [postgres:12.1](https://hub.docker.com/_/postgres)
+- Nginx: [nginx:1.7.7](https://hub.docker.com/_/nginx/)
 
 This work is intended to be a complete working example of a docker based deployment demonstrating the OHIF Viewer using Orthanc as the image store served using Nginx and self signed SSL certificates. This work should not be considered production as presented, but rather a sane starting point for further implementation of security related features.
 
@@ -228,9 +234,13 @@ docker network prune -f
 rm -rf mongo_data orthanc_db pg_data
 ```
 
+**NOTE**: The `rm` call from above may likely require sudo level privilege since the directories will be owned by root (or another user that is not your user ID)
+
 ## References
 
 - Othanc: [http://book.orthanc-server.com/index.html](http://book.orthanc-server.com/index.html)
 - OHIF Viewer: [https://docs.ohif.org](https://docs.ohif.org)
 - DICOM Library: [https://www.dicomlibrary.com](https://www.dicomlibrary.com)
 - Nginx reverse proxy: [https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/)
+
+
